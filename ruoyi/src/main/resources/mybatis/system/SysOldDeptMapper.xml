@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.mapper.SysOldDeptMapper">
+    
+    <resultMap type="SysOldDept" id="SysOldDeptResult">
+        <result property="deptId"    column="dept_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="ancestors"    column="ancestors"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="leader"    column="leader"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="attrId"    column="attr_id"    />
+        <association property="attr"    column="attr_id" javaType="SysAttribute" resultMap="SysAttributeResult" />
+<!--        <collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />-->
+    </resultMap>
+    <resultMap type="SysAttribute" id="SysAttributeResult">
+        <result property="attrId"    column="attr_id"    />
+        <result property="attribute"    column="attribute"    />
+    </resultMap>
+
+
+    <sql id="selectSysOldDeptVo">
+        select dd.dept_id, dd.parent_id, dd.ancestors, dd.dept_name, dd.order_num, dd.leader, dd.phone, dd.email, dd.status, dd.del_flag, dd.create_by, dd.create_time, dd.update_by, dd.update_time, dd.attr_id,
+        ccc.attr_id,ccc.attribute
+            from sys_dept dd
+                left join sys_attribute ccc on dd.attr_id = ccc.attr_id
+
+    </sql>
+
+
+    <select id="selectSysOldDeptList" parameterType="SysOldDept" resultMap="SysOldDeptResult">
+        <include refid="selectSysOldDeptVo"/>
+        where dd.del_flag = '2'
+            <if test="deptName != null  and deptName != ''"> and dd.dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="leader != null  and leader != ''"> and dd.leader like concat('%', #{leader}, '%')</if>
+
+            <if test="attribute != null and attribute != ''">
+
+            </if>
+    </select>
+    
+    <select id="selectSysOldDeptById" parameterType="Long" resultMap="SysOldDeptResult">
+        <include refid="selectSysOldDeptVo"/>
+        where dd.dept_id = #{deptId}
+    </select>
+
+    
+</mapper>

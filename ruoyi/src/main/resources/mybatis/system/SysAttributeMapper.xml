@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.mapper.SysAttributeMapper">
+    
+    <resultMap type="SysAttribute" id="SysAttributeResult">
+        <result property="attrId"    column="attr_id"    />
+        <result property="attribute"    column="attribute"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+    <resultMap id="SysDeptResult" type="SysDept">
+        <result property="attrId1"    column="attr_id"    />
+    </resultMap>
+
+    <sql id="selectSysAttributeVo">
+        select attr_id, attribute, del_flag
+        from sys_attribute
+-- //dept直接取出值
+    </sql>
+
+    <select id="selectSysAttributeList" parameterType="SysAttribute" resultMap="SysAttributeResult">
+        <include refid="selectSysAttributeVo"/>
+        where del_flag = '0'
+            <if test="attrId != null "> and attr_id = #{attrId}</if>
+            <if test="attribute != null  and attribute != ''"> and attribute like concat('%', #{attribute}, '%')</if>
+        ${dataScope}
+    </select>
+    
+    <select id="selectSysAttributeById" parameterType="Long" resultMap="SysAttributeResult">
+        <include refid="selectSysAttributeVo"/>
+        where attr_id = #{attrId} and del_flag = '0'
+    </select>
+        
+    <insert id="insertSysAttribute" parameterType="SysAttribute" useGeneratedKeys="true" keyProperty="attrId">
+        insert into sys_attribute
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="attribute != null  and attribute != ''">attribute,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="attribute != null  and attribute != ''">#{attribute},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysAttribute" parameterType="SysAttribute">
+        update sys_attribute
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="attribute != null  and attribute != ''">attribute = #{attribute},</if>
+        </trim>
+        where attr_id = #{attrId}
+    </update>
+
+    <delete id="deleteSysAttributeById" parameterType="Long">
+        update sys_attribute set del_flag = '2' where attr_id = #{attrId}
+    </delete>
+
+    <delete id="deleteSysAttributeByIds" parameterType="String">
+        update sys_attribute set del_flag = '2' where attr_id in
+        <foreach item="attrId" collection="array" open="(" separator="," close=")">
+            #{attrId}
+        </foreach>
+    </delete>
+    
+</mapper>
